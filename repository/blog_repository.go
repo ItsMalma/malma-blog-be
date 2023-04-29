@@ -45,3 +45,11 @@ func (repo BlogRepository) FindAll() ([]entity.Blog, error) {
 
 	return blogs, nil
 }
+
+func (repo BlogRepository) Delete(blog entity.Blog) error {
+	if err := repo.db.Delete(&blog).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

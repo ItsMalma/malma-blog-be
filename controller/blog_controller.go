@@ -145,8 +145,37 @@ func (blogController BlogController) UpdateBlogByID(c *fiber.Ctx) error {
 	}
 
 	// Send response
-	return c.Status(201).JSON(model.Payload{
-		Message: "CREATED",
+	return c.Status(200).JSON(model.Payload{
+		Message: "UPDATED",
+		Data:    blogController.blogMapper.EntityToResponse(blog),
+		Error:   nil,
+	})
+}
+
+func (blogController BlogController) DeleteBlogByID(c *fiber.Ctx) error {
+	// Get blog by id first
+	blogId, err := utilfiber.ParamInt64(c, "blogId")
+	if err != nil {
+		return err
+	}
+
+	if err := blogController.blogValidator.ValidateID(blogId); err != nil {
+		return err
+	}
+
+	blog, err := blogController.blogRepository.FindById(blogId)
+	if err != nil {
+		return err
+	}
+
+	// Then, delete the blog
+	if err := blogController.blogRepository.Delete(blog); err != nil {
+		return err
+	}
+
+	// Send response
+	return c.Status(200).JSON(model.Payload{
+		Message: "DELETED",
 		Data:    blogController.blogMapper.EntityToResponse(blog),
 		Error:   nil,
 	})
@@ -157,4 +186,5 @@ func (blogController BlogController) Routing(router fiber.Router) {
 	router.Get("/:blogId", blogController.GetBlogByID)
 	router.Get("", blogController.GetAllBlog)
 	router.Put("/:blogId", blogController.UpdateBlogByID)
+	router.Delete("/:blogId", blogController.DeleteBlogByID)
 }
