@@ -10,6 +10,10 @@ import (
 )
 
 func ErrorController() fiber.ErrorHandler {
+	repoErrTypeCodes := map[exception.RepositoryErrorType]int{
+		exception.RepoErrNotFound: 404,
+	}
+
 	return func(c *fiber.Ctx, err error) error {
 		switch err := err.(type) {
 		case *fiber.Error:
@@ -24,11 +28,23 @@ func ErrorController() fiber.ErrorHandler {
 				Data:    nil,
 				Error:   err.Err,
 			})
-		case exception.ValidatorError:
+		case exception.ValidatorErrors:
 			return c.Status(400).JSON(model.Payload{
-				Message: model.ToPayloadMsg("BAD_REQUEST"),
+				Message: "BAD_REQUEST",
 				Data:    nil,
 				Error:   err,
+			})
+		case exception.ValidatorError:
+			return c.Status(400).JSON(model.Payload{
+				Message: "BAD_REQUEST",
+				Data:    nil,
+				Error:   err,
+			})
+		case exception.RepositoryError:
+			return c.Status(repoErrTypeCodes[err.Type]).JSON(model.Payload{
+				Message: string(err.Type),
+				Data:    nil,
+				Error:   err.Err,
 			})
 		default:
 			log.Println(err)

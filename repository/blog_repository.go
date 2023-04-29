@@ -1,7 +1,11 @@
 package repository
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/malma/malma-blog-be/entity"
+	"github.com/malma/malma-blog-be/exception"
 	"gorm.io/gorm"
 )
 
@@ -15,6 +19,18 @@ func NewBlogRepository(db *gorm.DB) BlogRepository {
 
 func (repo BlogRepository) Save(blog entity.Blog) (entity.Blog, error) {
 	if err := repo.db.Save(&blog).Error; err != nil {
+		return entity.Blog{}, err
+	}
+
+	return blog, nil
+}
+
+func (repo BlogRepository) FindById(id int64) (entity.Blog, error) {
+	blog := entity.Blog{}
+	if err := repo.db.Where("id = ?", id).First(&blog).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = exception.NewRepoErr(exception.RepoErrNotFound, fmt.Sprintf("Can't found blog with id %v", id))
+		}
 		return entity.Blog{}, err
 	}
 

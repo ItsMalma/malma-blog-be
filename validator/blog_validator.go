@@ -21,3 +21,10 @@ func (BlogValidator) ValidateCreate(req model.CreateBlogRequest) error {
 	)
 	return exception.TransformValidationResults(results)
 }
+
+func (BlogValidator) ValidateID(id int64) error {
+	if id < 1 {
+		return exception.ValidatorError("Blog's id is less than 1")
+	}
+	return nil
+}

@@ -9,6 +9,7 @@ import (
 	"github.com/malma/malma-blog-be/exception"
 	"github.com/malma/malma-blog-be/mapper"
 	"github.com/malma/malma-blog-be/model"
+	"github.com/malma/malma-blog-be/pkg/utilfiber"
 	"github.com/malma/malma-blog-be/repository"
 	"github.com/malma/malma-blog-be/validator"
 )
@@ -66,6 +67,29 @@ func (blogController BlogController) CreateBlog(c *fiber.Ctx) error {
 	})
 }
 
+func (blogController BlogController) GetBlogByID(c *fiber.Ctx) error {
+	blogId, err := utilfiber.ParamInt64(c, "blogId")
+	if err != nil {
+		return err
+	}
+
+	if err := blogController.blogValidator.ValidateID(blogId); err != nil {
+		return err
+	}
+
+	blog, err := blogController.blogRepository.FindById(blogId)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(model.Payload{
+		Message: "FOUND",
+		Data:    blogController.blogMapper.EntityToResponse(blog),
+		Error:   nil,
+	})
+}
+
 func (blogController BlogController) Routing(router fiber.Router) {
 	router.Post("", blogController.CreateBlog)
+	router.Get("/:blogId", blogController.GetBlogByID)
 }
