@@ -89,7 +89,21 @@ func (blogController BlogController) GetBlogByID(c *fiber.Ctx) error {
 	})
 }
 
+func (blogController BlogController) GetAllBlog(c *fiber.Ctx) error {
+	blogs, err := blogController.blogRepository.FindAll()
+	if err != nil {
+		return err
+	}
+
+	return c.Status(200).JSON(model.Payload{
+		Message: "FOUND",
+		Data:    blogController.blogMapper.EntitiesToResponses(blogs),
+		Error:   nil,
+	})
+}
+
 func (blogController BlogController) Routing(router fiber.Router) {
 	router.Post("", blogController.CreateBlog)
 	router.Get("/:blogId", blogController.GetBlogByID)
+	router.Get("", blogController.GetAllBlog)
 }

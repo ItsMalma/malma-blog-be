@@ -36,3 +36,12 @@ func (repo BlogRepository) FindById(id int64) (entity.Blog, error) {
 
 	return blog, nil
 }
+
+func (repo BlogRepository) FindAll() ([]entity.Blog, error) {
+	blogs := []entity.Blog{}
+	if err := repo.db.Find(&blogs).Error; err != nil {
+		return nil, err
+	}
+
+	return blogs, nil
+}

@@ -26,3 +26,12 @@ func (mpr BlogMapper) EntityToResponse(blog entity.Blog) model.BlogResponse {
 
 	return res
 }
+
+func (mpr BlogMapper) EntitiesToResponses(blogs []entity.Blog) []model.BlogResponse {
+	ress := []model.BlogResponse{}
+	for _, blog := range blogs {
+		ress = append(ress, mpr.EntityToResponse(blog))
+	}
+
+	return ress
+}
