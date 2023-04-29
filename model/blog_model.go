@@ -8,6 +8,12 @@ type CreateBlogRequest struct {
 	Content     string `json:"content"`
 }
 
+type UpdateBlogRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Content     string `json:"content"`
+}
+
 type BlogResponse struct {
 	ID          int64       `json:"id"`
 	Title       string      `json:"title"`
