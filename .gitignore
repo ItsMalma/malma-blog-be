@@ -1,2 +1,4 @@
 bin/
 configs/development.json
+statics/*
+!statics/.gitkeep

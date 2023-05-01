@@ -16,7 +16,7 @@ func (err ControllerError) Error() string {
 
 func ErrParseRequest(reason string) ControllerError {
 	return ControllerError{
-		Msg:  "ERR_PARSE_REQUEST",
+		Msg:  "UNPARSED_REQUEST",
 		Err:  fmt.Sprintf("Unable to parse request (%v)", reason),
 		Code: 422,
 	}
@@ -24,7 +24,7 @@ func ErrParseRequest(reason string) ControllerError {
 
 func ErrContentType(expected string, got string) ControllerError {
 	return ControllerError{
-		Msg:  "ERR_UNSUPPORTED_CONTENT_TYPE",
+		Msg:  "UNSUPPORTED_CONTENT_TYPE",
 		Err:  fmt.Sprintf("Expected %v content type but got %v instead", expected, got),
 		Code: 415,
 	}

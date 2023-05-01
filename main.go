@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/malma/malma-blog-be/controller"
 	"github.com/malma/malma-blog-be/mapper"
+	"github.com/malma/malma-blog-be/pkg/storage"
 	"github.com/malma/malma-blog-be/repository"
 	"github.com/malma/malma-blog-be/validator"
 	"gorm.io/driver/postgres"
@@ -29,17 +30,21 @@ func main() {
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 
+	// pkg
+	storageManager := storage.NewStorageManager("statics")
+
 	// blog
 	blogValidator := validator.NewBlogValidator()
 	blogRepository := repository.NewBlogRepository(db)
 	blogMapper := mapper.NewBlogMapper()
-	blogController := controller.NewBlogController(blogValidator, blogRepository, blogMapper)
+	blogController := controller.NewBlogController(blogValidator, blogRepository, blogMapper, storageManager)
 
 	app := fiber.New(fiber.Config{
 		StrictRouting: true,
 		CaseSensitive: true,
 		ErrorHandler:  controller.ErrorController(),
 	})
+	app.Static("/", "./statics")
 
 	app.Route("/blogs", blogController.Routing)
 
